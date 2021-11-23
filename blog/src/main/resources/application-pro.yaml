@@ -1,0 +1,30 @@
+#生产环境使用的yaml配置文件
+
+#配置数据库环境
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://服务器IP:3306/blog?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: 你的mysql账号
+    password: 你的mysql密码
+
+#配置日志级别以及存放位置
+logging:
+  level:
+    root: warn      #指定全局的日志级别，默认为info，在生产环境可以设置为更高级别的warn
+    cn.xqs: info   #指定目录结构的日志级别，,在该目录下的日志级别的debug
+  file:
+    name: blog-pro.log  #指定日志文件的名字
+    path: ./log    #指定存放日志文件的位置
+
+mybatis-plus:
+  type-aliases-package: cn.xqs.blog.pojo  #设置别名
+
+
+#声明分页插件
+#pagehelper分页插件配置
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql

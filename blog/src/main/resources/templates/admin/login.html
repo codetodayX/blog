@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客发布</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link rel="stylesheet" th:href="@{/css/animate.css}" href="../../static/css/animate.css">
+    <link rel="stylesheet" th:href="@{/lib/editormd/css/editormd.min.css}"
+          href="../../static/lib/editormd/css/editormd.min.css">
+    <link rel="stylesheet" th:href="@{/css/me.css}" href="../../static/css/me.css">
+</head>
+
+<body>
+<br>
+<br>
+<br>
+<div class="m-container-small m-padded-tb-massive" style="max-width: 30em !important;">
+    <div class="ui container animate__animated animate__fadeInLeft animate__slow">
+        <div class="ui middle aligned center aligned grid">
+            <div class="column">
+                <h2 class="ui teal image header">
+                    <div class="content">
+                        管理员登录
+                    </div>
+                </h2>
+                <form class="ui large form" method="post" th:action="@{/admin/login}" action="#">
+                    <div class="ui stacked segment">
+                        <div class="field">
+                            <div class="ui left icon input">
+                                <i class="user icon"></i>
+                                <input type="text" name="username" placeholder="用户名">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui left icon input">
+                                <i class="lock icon"></i>
+                                <input type="password" name="password" placeholder="密码">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui left icon input">
+                                <i class="cloud icon"></i>
+                                <input type="password" name="checkCode" placeholder="请输入验证码">
+                                <span style="vertical-align: middle"><img id="codeImage" src="checkCode" alt=""
+                                                                          onclick="changeCheckCode(this)"></span>
+                                <span style="vertical-align: middle;"><a href="javascript:void(0)"
+                                                                         onclick="clickCode()">看不清?换一张</a></span>
+                                <script type="text/javascript">
+                                    function changeCheckCode(img) {
+                                        img.src = "checkCode?" + new Date().getTime();
+                                    }
+
+                                    function clickCode() {
+                                        $('#codeImage').attr("src", "checkCode?" + new Date().getTime());
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                        <button class="ui fluid large teal submit button">登 录</button>
+                    </div>
+
+                    <div class="ui error message"></div>
+                    <div class="ui mini negative message" th:text="${errorMsg}"
+                         th:unless="${#strings.isEmpty(errorMsg)}">
+
+                    </div>
+
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script th:src="@{/lib/editormd/editormd.min.js}" src="../../static/lib/editormd/editormd.min.js"></script>
+<script>
+    //表单校验
+    $('.ui.form').form({
+        fields: {
+            username: {
+                indentifier: 'username',
+                rules: [{
+                    type: 'empty',
+                    prompt: '请输入用户名'
+                }]
+            },
+            password: {
+                indentifier: 'password',
+                rules: [{
+                    type: 'empty',
+                    prompt: '请输入密码'
+                }]
+            },
+            checkCode: {
+                indentifier: 'checkCode',
+                rules: [{
+                    type: 'empty',
+                    prompt: '请输入验证码'
+                }]
+            },
+        }
+    })
+</script>
+</body>
+
+</html>

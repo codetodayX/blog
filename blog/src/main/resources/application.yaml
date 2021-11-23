@@ -1,0 +1,9 @@
+spring:
+  thymeleaf:
+    cache: false
+  profiles:
+    active: dev
+comment.avatar: /images/avatar.png
+comment.adminAvatar: /images/cute.jpg
+
+

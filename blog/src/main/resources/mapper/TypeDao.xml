@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xqs.blog.dao.TypeDao">
+    <resultMap id="typeMap" type="cn.xqs.blog.vo.TypeTop">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="count" column="count"></result>
+        <result property="bId" column="bId"></result>
+    </resultMap>
+    <select id="getTopType" resultMap="typeMap">
+        SELECT b.id AS bId ,ty.name,ty.id ,COUNT(ty.id) AS COUNT
+        FROM t_blog AS b
+        JOIN t_type AS ty
+        ON b.type_id = ty.id
+        GROUP BY ty.id
+        ORDER BY COUNT DESC
+        LIMIT 0,6
+
+    </select>
+    <select id="getTypes" resultMap="typeMap">
+        SELECT b.id AS bId ,ty.name,ty.id ,COUNT(ty.id) AS COUNT
+        FROM t_blog AS b
+        JOIN t_type AS ty
+        ON b.type_id = ty.id
+        GROUP BY ty.id
+        ORDER BY COUNT DESC
+    </select>
+</mapper>

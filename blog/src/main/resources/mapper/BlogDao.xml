@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xqs.blog.dao.BlogDao">
+    <resultMap id="blogMap" type="blog">
+        <id property="id" column="id"></id>
+        <result property="recommend" column="recommend"></result>
+        <result property="title" column="title"></result>
+        <result property="appreciation" column="appreciation"></result>
+        <result property="commentEnabled" column="commentEnabled"></result>
+        <result property="createTime" column="createTime"></result>
+        <result property="updateTime" column="updateTime"></result>
+        <result property="description" column="description"></result>
+        <result property="flag" column="flag"></result>
+        <result property="info" column="info"></result>
+        <result property="userId" column="u_id"></result>
+        <result property="typeId" column="type_id"></result>
+        <result property="views" column="views"></result>
+        <result property="shareStatement" column="shareStatement"></result>
+        <result property="published" column="published"></result>
+        <result property="firstPicture" column="firstPicture"></result>
+        <association property="user" javaType="user">
+            <id property="id" column="tuId"></id>
+            <result property="nickName" column="nickName"></result>
+            <result property="headPicture" column="headPicture"></result>
+        </association>
+        <association property="type" javaType="type">
+            <id property="id" column="tyId"></id>
+            <result property="name" column="tyName"></result>
+        </association>
+        <collection property="tags" ofType="tag">
+            <id property="id" column="taId"></id>
+            <result property="name" column="taName"></result>
+        </collection>
+    </resultMap>
+
+    <select id="getAllBlog" resultMap="blogMap" parameterType="cn.xqs.blog.vo.BlogQuery">
+        SELECT b.id, b.updateTime, b.recommend, b.published, ty.id AS tyId, ty.name AS tyName,b.title
+        FROM t_blog AS b
+        INNER JOIN t_type AS ty
+        ON b.type_id = ty.id
+        <where>
+            <if test="1 == 1">
+                1=1
+            </if>
+            <if test="title != null and title !=''">
+                and b.title = #{title}
+            </if>
+            <if test="typeId != null">
+                and ty.id = #{typeId}
+            </if>
+            <if test="recommend != null">
+                and b.recommend = #{recommend}
+            </if>
+        </where>
+    </select>
+    <select id="getEditorBlog" resultMap="blogMap" parameterType="integer">
+        SELECT
+        b.id,b.flag,b.title,b.info,b.firstPicture,b.description,b.recommend,b.shareStatement,b.appreciation,b.commentEnabled,ty.id
+        AS tyId,ty.name AS tyName,ta.id as taId,ta.name as taName
+        FROM t_blog AS b
+        JOIN t_type AS ty
+        ON b.type_id = ty.id
+        JOIN t_blog_tag AS tb
+        ON b.id = tb.blog_id
+        JOIN t_tag AS ta
+        ON tb.tag_id = ta.id
+        WHERE b.id = #{id}
+    </select>
+    <select id="getIndexBlogs" resultMap="blogMap">
+        SELECT b.id,b.title,b.description,b.updateTime,b.views,b.firstPicture,ty.id AS tyId,ty.name AS
+        tyName,tu.nickName,tu.headPicture,tu.id AS tuId
+        FROM t_blog AS b
+        JOIN t_type AS ty
+        ON b.type_id = ty.id
+        JOIN t_user AS tu
+        ON b.u_id = tu.id
+        where published = true
+        order by b.createTime desc
+    </select>
+    <select id="getAllBlogByTypeId" parameterType="cn.xqs.blog.vo.BlogQuery" resultMap="blogMap">
+        SELECT b.id,b.title,b.description,b.updateTime,b.views,b.firstPicture,ty.id AS tyId,ty.name AS
+        tyName,tu.nickName,tu.headPicture,tu.id AS tuId
+        FROM t_blog AS b
+        JOIN t_type AS ty
+        ON b.type_id = ty.id
+        JOIN t_user AS tu
+        ON b.u_id = tu.id
+        WHERE ty.id = #{typeId}
+        order by b.updateTime desc
+    </select>
+    <select id="getAllBlogByTypeId" parameterType="integer" resultMap="blogMap">
+        SELECT b.id,b.title,b.description,b.updateTime,b.views,b.firstPicture,ty.id AS tyId,ty.name AS
+        tyName,tu.nickName,tu.headPicture,tu.id AS tuId
+        FROM t_blog AS b
+        JOIN t_type AS ty
+        ON b.type_id = ty.id
+        JOIN t_user AS tu
+        ON b.u_id = tu.id
+        WHERE ty.id = #{typeId}
+        order by b.updateTime desc
+    </select>
+    <select id="getTagBlogs" parameterType="integer" resultMap="blogMap">
+        SELECT
+        b.id,
+        b.title,
+        b.description,
+        b.updateTime,
+        b.views,
+        b.firstPicture,
+        ty.id AS tyId,
+        ty.name AS tyName,
+        tu.nickName,
+        tu.headPicture,
+        tu.id AS tuId,
+        ta.id AS taId,
+        ta.name AS taName
+        FROM
+        t_blog AS b
+        JOIN t_type AS ty
+        ON b.type_id = ty.id
+        JOIN t_user AS tu
+        ON b.u_id = tu.id
+        JOIN t_blog_tag AS tb
+        ON tb.blog_id = b.id
+        JOIN t_tag AS ta
+        ON tb.tag_id = ta.id
+        <where>
+            <if test="1 == 1">
+                1=1
+            </if>
+            <if test="list != null">
+                <foreach collection="list" open=" and b.id in (" separator="," close=" )" item="id">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="getIdsByTagName" parameterType="string" resultType="integer">
+        SELECT
+        b.id AS id
+        FROM
+        t_blog AS b
+        JOIN t_blog_tag AS tb
+        ON tb.blog_id = b.id
+        JOIN t_tag AS ta
+        ON tb.tag_id = ta.id
+        WHERE ta.name IN (#{name})
+    </select>
+    <select id="search" parameterType="string" resultMap="blogMap">
+        SELECT
+        b.id,
+        b.title,
+        b.description,
+        b.updateTime,
+        b.views,
+        b.firstPicture,
+        ty.id AS tyId,
+        ty.name AS tyName,
+        tu.nickName,
+        tu.headPicture,
+        tu.id AS tuId
+        FROM
+        t_blog AS b
+        JOIN t_type AS ty
+        ON b.type_id = ty.id
+        JOIN t_user AS tu
+        ON b.u_id = tu.id
+        WHERE title LIKE #{query} or description like #{query}
+        ORDER BY b.updateTime DESC
+    </select>
+    <select id="getYears" resultType="string">
+        SELECT
+        DATE_FORMAT(b.updateTime, '%Y') AS YEAR
+        FROM
+        t_blog AS b
+        GROUP BY YEAR
+        ORDER BY YEAR DESC
+    </select>
+    <select id="getBlogsByYear" resultMap="blogMap" parameterType="string">
+        SELECT
+        b.title,
+        b.id,
+        b.updateTime
+        FROM
+        t_blog AS b
+        WHERE DATE_FORMAT(b.updateTime, '%Y') = #{year}
+    </select>
+    <select id="getBlogById" parameterType="integer" resultMap="blogMap">
+        SELECT
+        b.id,
+        b.title,
+        b.views,
+        b.updateTime,
+        tu.id AS tuId,
+        tu.headPicture,
+        tu.nickName,
+        b.info,
+        b.flag,
+        b.firstPicture,
+        ta.id AS taId,
+        ta.name AS taName
+        FROM
+        t_blog AS b
+        JOIN t_user AS tu
+        ON b.u_id = tu.id
+        JOIN t_blog_tag AS tb
+        ON b.id = tb.blog_id
+        JOIN t_tag AS ta
+        ON tb.tag_id = ta.id
+        WHERE b.id = #{id}
+    </select>
+    <update id="updateViews" parameterType="integer">
+        update t_blog set view =
+    </update>
+</mapper>

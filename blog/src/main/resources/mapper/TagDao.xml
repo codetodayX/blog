@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xqs.blog.dao.TagDao">
+    <resultMap id="tagMap" type="cn.xqs.blog.vo.TagTop">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="count" column="count"></result>
+    </resultMap>
+    <select id="getTopTags" resultMap="tagMap">
+        SELECT ta.id,ta.name,COUNT(tb.tag_id) AS COUNT
+        FROM t_blog AS b
+        JOIN t_blog_tag AS tb
+        ON b.id = tb.blog_id
+        JOIN t_tag AS ta
+        ON tb.tag_id = ta.id
+        GROUP BY tb.tag_id
+        ORDER BY COUNT DESC
+        LIMIT 0,10;
+    </select>
+    <select id="getTags" resultMap="tagMap">
+        SELECT ta.id,ta.name,COUNT(tb.tag_id) AS COUNT
+        FROM t_blog AS b
+        JOIN t_blog_tag AS tb
+        ON b.id = tb.blog_id
+        JOIN t_tag AS ta
+        ON tb.tag_id = ta.id
+        GROUP BY tb.tag_id
+        ORDER BY COUNT DESC
+    </select>
+</mapper>
